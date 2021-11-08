@@ -1,21 +1,18 @@
 {
-  "name": "static-html-webpack-boilerplate",
-  "version": "1.1.1",
-  "description": "Modern tooling for old-school static webpage development",
+  "name": "static-html-webpack-boilerplate-kaitei-gemu",
+  "version": "1.0.0",
+  "description": "Modern tooling for old-school static webpage development, adapted for IUT Metz",
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
-    "lint:js": "./node_modules/.bin/eslint src/js/*.js",
-    "lint:styles": "stylelint \"src/**/*.scss\"",
-    "lint:html": "pa11y-ci ./src/**/*.html",
-    "start:dev": "webpack-dev-server --config webpack.config.dev.js",
-    "start": "webpack --config webpack.config.prod.js && http-server ./dist -o"
+    "start": "webpack-dev-server --config webpack.config.dev.js",
+    "start:prod": "webpack --config webpack.config.prod.js && http-server ./dist -o"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/erickzhao/static-html-webpack-boilerplate.git"
   },
-  "author": "erick zhao",
+  "author": "logan porayko",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.7.4",
@@ -35,11 +32,11 @@
     "html-webpack-plugin": "^3.0.0",
     "http-server": "^0.12.1",
     "mini-css-extract-plugin": "^0.9.0",
-    "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "pa11y-ci": "^2.1.1",
     "postcss-loader": "^3.0.0",
     "raw-loader": "^4.0.1",
+    "sass": "^1.39.0",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.0.1",
     "stylelint": "^13.6.1",
@@ -52,5 +49,8 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "dependencies": {
+    "bootstrap": "^5.1.3"
+  }
 }
