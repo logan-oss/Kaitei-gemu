@@ -9,30 +9,46 @@
         height: 100%;
 
         #entete{
-            position: absolute;
             position: fixed;
+            top: 0;
             width: 100%;
             background-color: #868e96;
             z-index: 2;
 
-            #france-dp{
-                width: 40px;
-                padding-bottom: 8px; 
+            #profil:hover{
+                text-decoration: underline;
+                cursor:pointer;
             }
 
             #mmu{
-                > .col:hover{
-                    > label{
-                        text-decoration: underline;
-                    }
-                }
 
-                > .col:active{
-                    > label{
+                > .col {
+
+                    > .toggle{
+                        display: none;
+                    }
+
+                    > .toggle:checked{
+                        + label{color: white;}
+
+                        ~ .deroulant{
+                            transition-duration: 1.5s;
+                            max-height: 100vh;
+                        }
+                    }
+
+                    > label:hover{
+                        text-decoration: underline;
+                        cursor:pointer;
+                    }
+
+                    > label:active{
                         color: rgb(226, 226, 226);
                         font-size: smaller;
                     }
                 }
+
+                
             }
         }
 
@@ -40,6 +56,18 @@
             width: 100%;
             height: 100%;
             background-color: #f5b7b1;
+            padding-top: 103px;
+
+            #score{
+                display: block;
+                position: absolute;
+                right: 0;
+                text-align: center;
+                font-size: 18px;
+                width: 200px;
+                background-color: rgba(231, 231, 231, 0.651);
+                border: 2px solid rgba(145, 145, 145, 0.651);
+            }
         }
 
         #footer{
@@ -49,7 +77,6 @@
             bottom: 0;
             z-index: 2;
         }
-
     }
  }
 
@@ -71,3 +98,115 @@
          padding: 5px 5px;
      }
  }
+
+.nav-btn{
+    position: relative;
+
+    > label {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.deroulant{
+    display: block;
+    position: absolute;
+    width: 100%;
+    max-height: 0px;
+    overflow-y: hidden;
+    left: 0;
+    transition-duration: 0.1s;
+    transition-property: max-height;
+
+    > ul {
+        list-style:upper-latin;
+        padding: 0;
+        margin: 0;
+        margin-top: 5px;
+        width: 100%;
+        border-radius: 3px;
+
+        > li{
+            border-radius: 3px;
+            padding: 5px;
+
+            > a{
+                display: block;
+                color: black;
+                text-decoration: none;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        > li:nth-child(2n){
+            background-color: #868e96;
+        }
+
+        > li:nth-child(2n+1){
+            background-color: #737a7e;
+            
+        }
+
+        > li:hover{
+            border: 1px solid rgb(255, 255, 255);
+            cursor:pointer;
+        }
+    }
+}
+
+.small-img{
+    width: 40px;
+    padding-bottom: 8px; 
+}
+
+.link1{
+    color : black;
+    text-decoration: none;
+}
+
+.link1:hover{
+    cursor: pointer;
+    color: black;
+}
+
+.card{
+    display: block;
+    width: 100%;
+    height: 500px;
+    background-color: white;
+    text-align: center;
+
+    > img{
+        padding: 5px;
+        border-radius: 5px;
+        border : 2px solid rgba(83, 83, 83, 0.151);
+    }
+}
+
+.size-input1{
+    max-width: 600px;
+}
+
+.game-container1{
+    display: block;
+    width: 600px;
+    margin: 0 auto;
+}
+
+.chronometre{
+    font-size: 25px;
+    width: 50px;
+    height: 50px;
+    margin-top: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.589);
+    border: 2px solid black;
+}
+
+.ligne{
+    display: block;
+    width: 90%;
+    border : 1px solid rgba(145, 145, 145, 0.651); 
+    margin: 0 auto;
+}

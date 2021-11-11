@@ -14,6 +14,15 @@ const generateHTMLPlugins = () =>
       })
   );
 
+const generateHTMLTemplates = () =>
+  glob.sync("./src/templates/**/*.html").map(
+    (dir) =>
+      new HTMLWebpackPlugin({
+        filename: path.basename(dir), // Output
+        template: dir, // Input
+      })
+  );
+
 new webpack.DefinePlugin({
   WEBPACK_APP_API_URL: "This is a test default value webpack configs",
 });
@@ -24,7 +33,7 @@ module.exports = {
   },
   entry: ["./src/js/app.js", "./src/style/main.scss"],
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "dist/js"),
     filename: "app.bundle.js",
   },
   module: {
@@ -70,6 +79,7 @@ module.exports = {
       },
     ]),
     ...generateHTMLPlugins(),
+    ...generateHTMLTemplates(),
   ],
   stats: {
     colors: true,
