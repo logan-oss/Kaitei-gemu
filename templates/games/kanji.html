@@ -10,32 +10,32 @@
 </head>
 <body>
 <!-- Navbar -->
-  <div id="entete" class="blockquote">
-    <div class="container-fluid">
-      <div class="row cell-padding-1 fs-3">
-        <div class="col">
-          <span class="ms-4">改訂 ゲーム <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Ensign_of_France.svg/langfr-225px-Ensign_of_France.svg.png" id="france-dp" class="ms-2"></span>
-        </div>
-        <div class="col text-end">
-          <span class="mx-4">Profil </span>
-        </div>
+<div id="entete" class="blockquote">
+  <div class="container-fluid">
+    <div class="row cell-padding-1 fs-3">
+      <div class="col">
+        <span class="ms-4">改訂 ゲーム <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Ensign_of_France.svg/langfr-225px-Ensign_of_France.svg.png" id="france-dp" class="ms-2"></span>
       </div>
-      <div class="row cell-text-center cell-border cell-padding-1" id="mmu">
-        <div class="col">
-          <label for="">Kanji</label>
-        </div>
-        <div class="col">
-          <label for="">Traduction</label>   
-        </div>
-        <div class="col">
-          <label for="">Expression</label>    
-        </div>
-        <div class="col">
-          <label for="">Shiritori</label>
-        </div>
+      <div class="col text-end">
+        <span class="mx-4">Profil </span>
+      </div>
+    </div>
+    <div class="row cell-text-center cell-border cell-padding-1" id="mmu">
+      <div class="col">
+        <label for="">Kanji</label>
+      </div>
+      <div class="col">
+        <label for="">Traduction</label>   
+      </div>
+      <div class="col">
+        <label for="">Expression</label>    
+      </div>
+      <div class="col">
+        <label for="">Shiritori</label>
       </div>
     </div>
   </div>
+</div>
 <!-- Navbar -->
 
 <!-- Contenu -->
@@ -107,6 +107,16 @@
       <div class="text-center d-none mt-4" id="ready-area">
         <input class="btn btn-success" id="readyBtn" type="button" onclick="ready()" value="Prêt !">
     </div>
+  </div>
+    </div>
+    <div id="cardGame" class="game-container1 text-center d-none">
+      <label id="chrono" class="chronometre">0</label>
+      <div class="card mt-4 shadow-lg p-3 mb-5 bg-body rounded" id="kanji">
+        <img id="imgKanji" class="mt-5 shadow-lg p-3 mb-5 bg-body rounded" src="" alt="">
+        <p id="resultat"></p>
+        <p id="reponse"></p>
+      </div>
+    </div>
     <form method="POST" id="formKanji" class="mt-4">
       <div id="response" class="row d-flex justify-content-center d-none">
       <div class="mb-3 col-5">
@@ -115,9 +125,6 @@
       <button class="btn btn-primary col-auto" style="height: 100%;" type="submit">Valider</button>
     </div>
     </form>
-  </div>
-    </div>
-</div>
 </div>
 <!-- Contenu -->
 
@@ -133,5 +140,7 @@
 <script src="./../bootstrap/js/bootstrap.min.js"></script>
 <script src="./../socket.io/socket.io.js"></script>
 <script src="./../js/kanji.js"></script>
+<script src="./../js/autoload.js"></script>
+<script src="./../js/index.js"></script>
 </body>
 </html>

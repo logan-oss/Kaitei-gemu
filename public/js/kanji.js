@@ -25,6 +25,7 @@ const private = document.getElementById('private');
 const formCode = document.getElementById('formCode');
 
 const userCard = document.getElementById("user-card");
+const gameCard = document.getElementById("cardGame");
 
 const restartArea = document.getElementById("restart-area");
 const readyArea = document.getElementById("ready-area");
@@ -53,6 +54,7 @@ if(roomId){
     })
 }
 
+// récupère 
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
     let html = "";
@@ -122,6 +124,7 @@ socket.on('join room', (roomId) => {
 });
 
 socket.on('start game', (players) => {
+    socket.emit("start game");
     startGame(players);
     waitingArea.classList.add("d-none");
     readyBtn.classList.add("d-none");
@@ -145,24 +148,43 @@ socket.on('play', (ennemyPlayer) => {
     }
 })
 
+let myTime;
 function startGame(players){
-    tablePlayers(players);
+    printScore(players);
     restartArea.classList.add('d-none');
     socket.on("time", (time) => {
-        console.log(time);
+        myTime = time;
+        console.log(myTime)
+        $('#chrono').text(time);
+        var audio = new Audio('../sound/tic.mp3');
+        audio.play();
     })
     
     socket.on("get kanji", (kanji) => {
         response.classList.remove("d-none");
+        gameCard.classList.remove("d-none");
+        $("#reponse").text("");
+        $("#resultat").text("");
+        $("#imgKanji").attr("src",kanji.img);
+        $("#imgKanji").attr("alt",kanji.kanji);
         $("#responseInput").val("");
         $("#responseInput").focus();
         console.log(kanji);
-        socket.emit("get kanji", (player));
-        $("#formKanji").on("submit", function(e){
-            e.preventDefault();
-            let response = $("#responseInput").val().trim()
-            console.log(socket.emit("get response", ({response , player})));
-        })
+    })
+
+    socket.on("manche fini", (kanji) => {
+        $("#imgKanji").attr("src",kanji.visuel);
+        $("#reponse").text("La réponse était "+kanji.traduction);
+        $('#chrono').text("10");
+        response.classList.add("d-none");
+        myTime = 10;
+        console.log(kanji)
+        printScore(kanji.players);
+    })
+    $("#formKanji").on("submit", function(e){
+        e.preventDefault();
+        let response = $("#responseInput").val().trim()
+        socket.emit("get response kanji", ({response , player, time:myTime}));
     })
     
     socket.on("get score", (players) => {
@@ -209,18 +231,35 @@ function tablePlayers(players){
 
 function printScore(players){
      players.sort(function (a, b) {
-         return a.score - b.score;
+         return b.score - a.score;
      })
 
     let html = "<h3 class='mb-2'>Score</h3>";
     players.forEach(p => {
-        html += "<div class='col-12 text-center'>"+p.username+" : "+p.score+" </div>"
-        if(p.socketId === player.socketId){
-            if(p.score > playerScore){
-                playerScore = p.score;
-                response.classList.add("d-none");
+            if(p.socketId === player.socketId){
+                if(p.win){
+                    var audio = new Audio('../sound/succes.mp3');
+                    audio.play();
+                    playerScore = p.score;
+                    response.classList.add("d-none");
+                    $("#resultat").text("Bien joué !");
+                    html += "<div class='col-12 text-center bg-white'><b>"+p.username+" : "+p.score+" pt </b></div>"
+                }else{
+                    console.log(myTime)
+                    if(myTime < 10){
+                        $("#resultat").text("Mauvaise réponse !");
+                    }
+                        html += "<div class='col-12 text-center'><b>"+p.username+" : "+p.score+" pt </b></div>"
+                }
+            }else{
+                if(p.win === false){
+                    html += "<div class='col-12 text-center'>"+p.username+" : "+p.score+" pt </div>"
+                }else{
+                    var audio = new Audio('../sound/point.mp3');
+                    audio.play();
+                    html += "<div class='col-12 text-center bg-white'>"+p.username+" : "+p.score+" pt</div>"
+                }
             }
-        }
     })
     tablePlayer.innerHTML = "";
     tablePlayer.innerHTML = html;

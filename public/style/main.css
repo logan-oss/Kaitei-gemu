@@ -1,33 +1,61 @@
 html {
-  width: 100vw;
   height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 html body {
   width: 100%;
   height: 100%;
 }
 html body #entete {
-  position: absolute;
   position: fixed;
+  height: 10%;
+  top: 0;
   width: 100%;
   background-color: #868e96;
   z-index: 2;
 }
-html body #entete #france-dp {
-  width: 40px;
-  padding-bottom: 8px;
-}
-html body #entete #mmu > .col:hover > label {
+html body #entete #profil:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
-html body #entete #mmu > .col:active > label {
+html body #entete img {
+  height: 100%;
+}
+html body #entete #mmu > .col > .toggle {
+  display: none;
+}
+html body #entete #mmu > .col > .toggle:checked + label {
+  color: white;
+}
+html body #entete #mmu > .col > .toggle:checked ~ .deroulant {
+  transition-duration: 1.5s;
+  max-height: 100vh;
+}
+html body #entete #mmu > .col > label:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+html body #entete #mmu > .col > label:active {
   color: #e2e2e2;
   font-size: smaller;
 }
 html body #content {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  height: auto;
   background-color: #f5b7b1;
+  padding-top: 103px;
+}
+html body #content #score {
+  display: block;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  font-size: 18px;
+  width: 200px;
+  background-color: rgba(231, 231, 231, 0.651);
+  border: 2px solid rgba(145, 145, 145, 0.651);
 }
 html body #tablePlayer {
   background-color: rgba(211, 211, 211, 0.6);
@@ -37,6 +65,8 @@ html body #tablePlayer {
   height: auto;
   width: auto;
   border: solid black 1px;
+  text-align: center;
+  padding: 0%;
 }
 html body #footer {
   position: absolute;
@@ -56,6 +86,114 @@ html body #footer {
 
 .cell-padding-1 > .col {
   padding: 5px 5px;
+}
+
+.nav-btn {
+  position: relative;
+}
+.nav-btn > label {
+  width: 100%;
+  height: 100%;
+}
+
+.deroulant {
+  display: block;
+  position: absolute;
+  width: 100%;
+  max-height: 0px;
+  overflow-y: hidden;
+  left: 0;
+  transition-duration: 0.1s;
+  transition-property: max-height;
+}
+.deroulant > ul {
+  list-style: upper-latin;
+  padding: 0;
+  margin: 0;
+  margin-top: 5px;
+  width: 100%;
+  border-radius: 3px;
+}
+.deroulant > ul > li {
+  border-radius: 3px;
+  padding: 5px;
+}
+.deroulant > ul > li > a {
+  display: block;
+  color: black;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+}
+.deroulant > ul > li:nth-child(2n) {
+  background-color: #868e96;
+}
+.deroulant > ul > li:nth-child(2n+1) {
+  background-color: #737a7e;
+}
+.deroulant > ul > li:hover {
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.small-img {
+  width: 40px;
+  padding-bottom: 8px;
+}
+
+.link1 {
+  color: black;
+  text-decoration: none;
+}
+
+.link1:hover {
+  cursor: pointer;
+  color: black;
+}
+
+#kanji {
+  display: block;
+  width: 100%;
+  height: 500px;
+  background-color: white;
+  text-align: center;
+}
+#kanji > img {
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid rgba(83, 83, 83, 0.151);
+}
+
+.size-input1 {
+  max-width: 600px;
+}
+
+.game-container1 {
+  display: block;
+  width: 600px;
+  margin: 0 auto;
+  margin-top: -5%;
+}
+.game-container1 img {
+  max-width: 100%;
+  max-height: 300px;
+}
+
+.chronometre {
+  font-size: 25px;
+  width: 50px;
+  height: 50px;
+  margin-top: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.589);
+  border: 2px solid black;
+}
+
+.ligne {
+  display: block;
+  width: 90%;
+  border: 1px solid rgba(145, 145, 145, 0.651);
+  margin: 0 auto;
 }
 
 /*# sourceMappingURL=main.css.map */

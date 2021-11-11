@@ -29,6 +29,7 @@ http.listen(port, () => {
 });
 
 let rooms = [];
+let roomGame = [];
 let kanji = [{ id: 1, kanji: "月", kana: "つき", traduction: "lune", difficulte: 1, img_kanji: "https://ae01.alicdn.com/kf/HTB1Qg8Ua5jrK1RjSsplq6xHmVXae.jpg?width=800&height=800&hash=1600", visuel: "https://static.actu.fr/uploads/2021/08/adobestock-297400017.jpeg", description: "" },
 { id: 2, kanji: "水", kana: "みず", traduction: "eau", difficulte: 1, img_kanji: "https://lh3.googleusercontent.com/proxy/yyrUAPyRKBTNqT9SupGNO4Sa5-vztT7hPk7BWB-hAd3YdwkafEHoO2ANQ7dWoYUJui6Ijb8pE00g8i0Kz9SNU0pJ4EZre_iKe61H44YdpGIaRYlDVPmbNCuazu5PeRb4GY4DMVzGReCYChrbKKjv-o_6_e2VD9Azlq8", visuel: "https://www.weka.fr/actualite/wp-content/uploads/2021/04/eau-et-assainissement-la-gestion-publique-des-services-un-atout-pour-les-collectivites-1280x720.jpg", description: "" },
 { id: 3, kanji: "風", kana: "かぜ", traduction: "vent", difficulte: 1, img_kanji: "https://i.skyrock.net/4857/51654857/pics/2142078567_1.gif", visuel: "https://cdn.radiofrance.fr/s3/cruiser-production/2021/06/26f3627c-db89-46b8-adce-f4af974d7f61/1136_tempete.jpg", description: "" },
@@ -89,9 +90,31 @@ io.on('connection', (socket) => {
                 io.to(room.id).emit("ready", players);
             }else{
                 io.to(roomId).emit("start game", players);
-                KanjiStart(room);
+                KanjiStart(room)
             }
     })
+
+    socket.on("get response kanji", (res) => {
+            response = (res.response).split(' ');
+            player = (res.player)
+            let myRoomGame =  roomGame.find(element => element.roomId === player.roomId);
+            let room = rooms.find(element => element.id === myRoomGame.roomId);
+            let players = room.players;
+            let monKanji = myRoomGame.kanji;
+            player = players.find(element => element.socketId === player.socketId);
+            response.forEach(word => {
+                if(word === monKanji.traduction){
+                    player.score += 10 - res.time;
+                    player.win = true;
+                    if(player.score >= 50){
+                        if(!myRoomGame.winner){
+                            myRoomGame.winner = player;
+                        }
+                    }
+                    io.to(room.id).emit('get score', room.players);
+                }
+            })
+    });
 
     // j'envoi la liste des rooms
     socket.on('get rooms', () => {
@@ -125,54 +148,49 @@ io.on('connection', (socket) => {
     })
 
     function KanjiStart(room){
-        let win = false;
-        let winner;
-        players = room.players;
             this.manche = function(){
                 KanjiGame();
             }
             KanjiGame();
-            setInterval(this.manche.bind(this), 25000);
+            setInterval(this.manche.bind(this), 23000);
+
 
             function KanjiGame(){
-                if(win){
-                    io.to(room.id).emit('winner', winner);
-                    return;
+                thisRoom = rooms.find(element => element.id === room.id);
+                players = thisRoom.players;
+                let monKanji;
+                if(myRoom = roomGame.find(element => element.roomId === thisRoom.id)){
+                    if(myRoom.winner){
+                        io.to(room.id).emit('winner', myRoom.winner);
+                        let index = roomGame.indexOf(myRoom)
+                        roomGame.splice(index, 1)
+                        return;
+                    }else{
+                    monKanji = kanji[Math.floor(Math.random()*kanji.length)];
+                    myRoom.kanji = monKanji;
+                    }
+                }else{
+                    monKanji = kanji[Math.floor(Math.random()*kanji.length)];
+                    let myRoom = {roomId: thisRoom.id, kanji: monKanji, winner:null}
+                    roomGame.push(myRoom);
                 }
-                let monKanji = kanji[Math.floor(Math.random()*kanji.length)];
-                io.to(room.id).emit('get kanji', monKanji);
-                socket.on("get kanji", (p) => {
-                    console.log(p.username);
-                })
+                io.to(room.id).emit('get kanji', {kanji:monKanji.kanji, img:monKanji.img_kanji});
                 let time = 0;
-                socket.on("get response", (res) => {
-                    console.log("ok")
-                        response = (res.response).split(' ');
-                        player = (res.player)
-                        player = players.find(element => element.socketId === player.socketId);
-                        console.log(res.response)
-                        response.forEach(word => {
-                            if(word === monKanji.traduction){
-                                player.score += 10 - time;
-                                if(player.score >= 50){
-                                    win = true;
-                                    if(!winner){
-                                        winner = player;
-                                    }
-                                }
-                                io.to(room.id).emit('get score', room.players);
-                            }
-                        })
-                });
                 this.run = function() {
                     timer();
                 }
                 timer();
-                setInterval(this.run.bind(this), 2000);
+                let Timer = setInterval(this.run.bind(this), 1500);
 
                 function timer(){
                     if(time === 10){
-                        return;
+                        players = rooms.find(element => element.id === thisRoom.id).players;
+                        players.forEach(p => {
+                            p.win = false;
+                        })
+                        time = 0;
+                        io.to(room.id).emit('manche fini', {traduction:monKanji.traduction, visuel:monKanji.visuel, players});
+                        clearInterval(Timer);
                     }else{
                         io.to(room.id).emit('time', time);
                         time += 1;
@@ -183,6 +201,7 @@ io.on('connection', (socket) => {
 });
 
 function createRoom(player) {
+    console.log(roomId())
     const room = { id: roomId(), players: [], private: false, game: "" };
 
     player.roomId = room.id;
@@ -193,12 +212,13 @@ function createRoom(player) {
     rooms.push(room);
 
     return room;
+
+    function roomId() {
+        let code = (Math.random().toString(36).substr(2,5)).toUpperCase();
+        while(rooms.find(room => room.id === code)){
+            code = (Math.random().toString(36).substr(2,5)).toUpperCase();
+        }
+        return code;
+    }
 }
 
-function roomId() {
-    let code = (Math.random().toString(36).substr(2,5)).toUpperCase();
-    while(rooms.find(room => room.id === code)){
-        code = (Math.random().toString(36).substr(2,5)).toUpperCase();
-    }
-    return code;
-}
