@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./../bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./../style/main.css">
+  <title>Accueil</title>
+</head>
+<body>
+<!-- Navbar -->
+  <div id="entete" class="blockquote">
+    <div class="container-fluid">
+      <div class="row cell-padding-1 fs-3">
+        <div class="col">
+          <span class="ms-4">改訂 ゲーム <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Ensign_of_France.svg/langfr-225px-Ensign_of_France.svg.png" id="france-dp" class="ms-2"></span>
+        </div>
+        <div class="col text-end">
+          <span class="mx-4">Profil </span>
+        </div>
+      </div>
+      <div class="row cell-text-center cell-border cell-padding-1" id="mmu">
+        <div class="col">
+          <label for="">Kanji</label>
+        </div>
+        <div class="col">
+          <label for="">Traduction</label>   
+        </div>
+        <div class="col">
+          <label for="">Expression</label>    
+        </div>
+        <div class="col">
+          <label for="">Shiritori</label>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Navbar -->
+
+<!-- Contenu -->
+<div id="content">
+  <div class="row" style="width: 100%;">
+    <div id="tablePlayer" class="d-none">
+    </div>
+    <div class="col-sm-12 col-md-6 offset-md-3" style="margin-top: 10%;">
+
+        <div class="alert d-none" role="alert" id="turn-message"></div>
+
+        <div class="card mb-3" id="user-card">
+            <div class="card-body">
+                <form method="POST" id="form">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <input type="text" class="form-control" id="username" minlength="2" maxlength="20"
+                            placeholder="Saisir votre nom d'utilisateur" required>
+                    </div>
+                    <div class="d-inline-flex">
+                    <button class="btn btn-primary" id="start" type="submit">Créer un salon</button>
+                      <div id="chkPrivate">
+                        <input type="checkbox" name="private" id="private" class="ms-2">
+                        <label for="private">privée</label> 
+                      </div>
+                     
+                    </div> 
+                    
+                </form>
+
+                <form method="POST" id="formCode" class="mt-4">
+                  <div class="row">
+                  <div class="mb-3 col-3">
+                      <input type="text" class="form-control" id="codeParty" minlength="2" maxlength="20"
+                          placeholder="Code" required>
+                  </div>
+                  <button class="btn btn-primary col-auto" style="height: 100%;" type="submit">Rejoindre</button>
+                </div>
+                </form>
+            </div>
+          </div>
+          <div class="card mb-3 d-none" id="rooms-card">
+            <div class="card-header">Salon disponible</div>
+            <ul class="list-group liste-group-flush" id="rooms-list"></ul>
+            </div>
+    
+          <div class="d-none" id="waiting-area">
+    
+            <div class="card mb-3">
+                <div class="card-header">En attente d'un autre joueur</div>
+                <div class="card-body mx-auto">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="card">
+                <div class="card-body text-center">
+                    Code de la partie : 
+                    <span id="link-to-share"></span>
+                </div>
+            </div>
+        </div>
+      <div class="text-center d-none mt-2" id="restart-area">
+          <input class="btn btn-primary" id="restart" type="button" value="Rejouer">
+      </div>
+
+      <div class="text-center d-none mt-4" id="ready-area">
+        <input class="btn btn-success" id="readyBtn" type="button" onclick="ready()" value="Prêt !">
+    </div>
+    <form method="POST" id="formKanji" class="mt-4">
+      <div id="response" class="row d-flex justify-content-center d-none">
+      <div class="mb-3 col-5">
+          <input type="text" class="form-control" id="responseInput" placeholder="Réponse" required>
+      </div>
+      <button class="btn btn-primary col-auto" style="height: 100%;" type="submit">Valider</button>
+    </div>
+    </form>
+  </div>
+    </div>
+</div>
+</div>
+<!-- Contenu -->
+
+<!-- Footer -->
+<footer class="bg-dark text-center text-white" id="footer">
+  <div class="text-center p-3" style="background-color: #34495e;">
+    © 2020 Copyright:
+    <a class="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+  </div>
+</footer>
+<!-- Footer -->
+<script src="./../jquery/jquery.min.js"></script>
+<script src="./../bootstrap/js/bootstrap.min.js"></script>
+<script src="./../socket.io/socket.io.js"></script>
+<script src="./../js/kanji.js"></script>
+</body>
+</html>

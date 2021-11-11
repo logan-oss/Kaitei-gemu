@@ -1,0 +1,83 @@
+
+ html{
+     width: 100vw;
+     height: 100vh;
+
+    body{
+        width: 100%;
+        height: 100%;
+
+        #entete{
+            position: absolute;
+            position: fixed;
+            width: 100%;
+            background-color: #868e96;
+            z-index: 2;
+
+            #france-dp{
+                width: 40px;
+                padding-bottom: 8px; 
+            }
+
+            #mmu{
+                > .col:hover{
+                    > label{
+                        text-decoration: underline;
+                    }
+                }
+
+                > .col:active{
+                    > label{
+                        color: rgb(226, 226, 226);
+                        font-size: smaller;
+                    }
+                }
+            }
+        }
+
+        #content{
+            width: 100%;
+            height: 100%;
+            background-color: #f5b7b1;
+
+        }
+
+        #tablePlayer{
+            background-color: rgba(lightgrey,0.6);
+            position: absolute;
+            top:96.33px;
+            right: 0%;
+            height: auto;
+            width: auto;
+            border: solid black 1px;
+        }
+
+        #footer{
+            position: absolute;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            z-index: 2;
+        }
+
+    }
+ }
+
+
+ .cell-text-center{
+     > .col{
+         text-align: center;
+     }
+ }
+
+ .cell-border{
+     > .col{
+         border: 2px solid black;
+     }
+ }
+
+ .cell-padding-1{
+     > .col{
+         padding: 5px 5px;
+     }
+ }
