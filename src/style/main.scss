@@ -2,11 +2,11 @@
 
  html{
      width: 100vw;
-     height: 100vh;
+     min-height: 100vh;
 
     body{
         width: 100%;
-        height: 100%;
+        min-height: 100vh;
 
         #entete{
             position: fixed;
@@ -54,19 +54,35 @@
 
         #content{
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             background-color: #f5b7b1;
             padding-top: 103px;
+            padding-bottom: 56px;
 
-            #score{
-                display: block;
-                position: absolute;
-                right: 0;
-                text-align: center;
-                font-size: 18px;
-                width: 200px;
-                background-color: rgba(231, 231, 231, 0.651);
-                border: 2px solid rgba(145, 145, 145, 0.651);
+            @media screen and (min-width: 900px) {
+                #score{
+                    display: block;
+                    position: absolute;
+                    right: 0;
+                    text-align: center;
+                    font-size: 18px;
+                    width: 200px;
+                    background-color: rgba(231, 231, 231, 0.651);
+                    border: 2px solid rgba(145, 145, 145, 0.651);
+                }
+            }
+
+            @media screen and (max-width: 900px) {
+                #score{
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    text-align: center;
+                    font-size: 18px;
+                    width: 200px;
+                    background-color: rgba(231, 231, 231, 0.651);
+                    border: 2px solid rgba(145, 145, 145, 0.651);
+                }
             }
         }
 
@@ -170,39 +186,90 @@
     color: black;
 }
 
-.card{
-    display: block;
-    width: 100%;
-    height: 500px;
-    background-color: white;
-    text-align: center;
-
-    > img{
-        padding: 5px;
-        border-radius: 5px;
-        border : 2px solid rgba(83, 83, 83, 0.151);
+@media screen and (max-width: 900px) {
+    #france{
+        display: none;
     }
 }
 
-.size-input1{
-    max-width: 600px;
+@media screen and (min-width: 900px) {
+    .card{
+        display: block;
+        width: 100%;
+        height: 500px;
+        background-color: white;
+        text-align: center;
+    
+        > img{
+            padding: 5px;
+            border-radius: 5px;
+            border : 2px solid rgba(83, 83, 83, 0.151);
+            width: 60%;
+            margin-bottom: 50px;
+        }
+    }
+    
+    .size-input1{
+        max-width: 600px;
+    }
+    
+    
+    
+    .game-container1{
+        display: block;
+        width: 600px;
+        margin: 0 auto;
+    }
+    
+    .chronometre{
+        font-size: 25px;
+        width: 50px;
+        height: 50px;
+        margin-top: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 0, 0, 0.589);
+        border: 2px solid black;
+    }
 }
 
-.game-container1{
-    display: block;
-    width: 600px;
-    margin: 0 auto;
+@media screen and (max-width: 900px) {
+    .card{
+        display: block;
+        width: 100%;
+        background-color: white;
+        text-align: center;
+    
+        > img{
+            padding: 5px;
+            border-radius: 5px;
+            border : 2px solid rgba(83, 83, 83, 0.151);
+            margin-bottom: 10px;
+        }
+    }
+    
+    .size-input1{
+        max-width: 600px;
+    }
+    
+    
+    
+    .game-container1{
+        display: block;
+        width: 80%;
+        margin: 0 auto;
+    }
+    
+    .chronometre{
+        font-size: 20px;
+        width: 40px;
+        height: 40px;
+        margin-top: 10px;
+        border-radius: 50%;
+        background-color: rgba(255, 0, 0, 0.589);
+        border: 2px solid black;
+    }
 }
 
-.chronometre{
-    font-size: 25px;
-    width: 50px;
-    height: 50px;
-    margin-top: 40px;
-    border-radius: 50%;
-    background-color: rgba(255, 0, 0, 0.589);
-    border: 2px solid black;
-}
 
 .ligne{
     display: block;

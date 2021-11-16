@@ -11,13 +11,6 @@ import "./autoload.js"
 if (module.hot) {
     module.hot.accept();
   }
-  if (!document.location.pathname.endsWith(".html")) {
-    let newUrl = window.location.pathname;
-    if (newUrl.charAt(newUrl.length - 1) !== "/") {
-      newUrl += "/";
-    }
-    window.location.replace(`${newUrl}index.html`);
-  }
   const location = document.location.pathname.split("/").pop().split(".");
   location.pop();
   const jsFile = location.join(".") + ".js";

@@ -33,7 +33,7 @@ module.exports = {
   },
   entry: ["./src/js/app.js", "./src/style/main.scss"],
   output: {
-    path: path.resolve(__dirname, "dist/js"),
+    path: path.resolve(__dirname, "dist/"),
     filename: "app.bundle.js",
   },
   module: {
