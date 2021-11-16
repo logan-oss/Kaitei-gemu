@@ -46,6 +46,7 @@ html body #content {
   height: auto;
   background-color: #f5b7b1;
   padding-top: 103px;
+  padding-bottom: 100px;
 }
 html body #content #score {
   display: block;
@@ -69,10 +70,9 @@ html body #tablePlayer {
   padding: 0%;
 }
 html body #footer {
-  position: absolute;
-  position: fixed;
+  position: relative;
   width: 100%;
-  bottom: 0;
+  bottom: 0%;
   z-index: 2;
 }
 
@@ -176,7 +176,7 @@ html body #footer {
 }
 .game-container1 img {
   max-width: 100%;
-  max-height: 300px;
+  height: 300px;
 }
 
 .chronometre {
@@ -194,6 +194,47 @@ html body #footer {
   width: 90%;
   border: 1px solid rgba(145, 145, 145, 0.651);
   margin: 0 auto;
+}
+
+#crown-animation {
+  width: auto;
+  margin-top: 20%;
+  animation: crown 1s linear infinite;
+  /* IE 10+ */
+}
+#crown-animation img {
+  height: 100px;
+}
+#crown-animation p {
+  font-weight: bolder;
+  font-size: 22px;
+}
+
+@keyframes crown {
+  0% {
+    -webkit-transform: translate(0);
+    transform: translate(0);
+  }
+  20% {
+    -webkit-transform: translate(-2px, 2px);
+    transform: translate(-8px, 4px);
+  }
+  40% {
+    -webkit-transform: translate(-2px, -2px);
+    transform: translate(-8px, -4px);
+  }
+  60% {
+    -webkit-transform: translate(2px, 2px);
+    transform: translate(8px, 4px);
+  }
+  80% {
+    -webkit-transform: translate(2px, -2px);
+    transform: translate(8px, -4px);
+  }
+  100% {
+    -webkit-transform: translate(0);
+    transform: translate(0);
+  }
 }
 
 /*# sourceMappingURL=main.css.map */

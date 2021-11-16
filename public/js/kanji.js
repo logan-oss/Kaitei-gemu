@@ -13,7 +13,7 @@ const player = {
 const socket = io();
 
 let playerScore = player.score;
-
+let myPlayers = [];
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const roomId = urlParams.get('room');
@@ -37,9 +37,10 @@ const roomsList = document.getElementById("rooms-list");
 const linkToShare = document.getElementById("link-to-share")
 
 const tablePlayer = document.getElementById("tablePlayer");
-
+const crown = document.getElementById("crown-animation");
 const readyBtn = document.getElementById("readyBtn");
 const response = document.getElementById("response");
+const imgKanji = document.getElementById('imgKanji');
 
 let ennemyUsername = "";
 
@@ -54,12 +55,13 @@ if(roomId){
     })
 }
 
-// récupère 
+// récupère
 socket.emit('get rooms');
 socket.on('list rooms', (rooms) => {
     let html = "";
     if(rooms.length > 0 ){
         rooms.forEach(room => {
+          console.log(room)
             if(room.players.length !== 7 && room.private === false){
                 html += `<li class="list-group-item d-flex justify-content-between">
                 <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} - ${room.id}</p>
@@ -74,7 +76,7 @@ socket.on('list rooms', (rooms) => {
             roomsCard.classList.add("d-none");
             chkPrivate.classList.add("d-none");
             formCode.classList.add("d-none");
-            
+
         }else{
             roomsCard.classList.remove('d-none');
             roomsList.innerHTML = html;
@@ -99,7 +101,7 @@ $("#form").on('submit', function(e){
             player.private = true;
         }
     }
-    
+
     player.socketId = socket.id;
     userCard.hidden = true;
     roomsCard.classList.add('d-none');
@@ -119,6 +121,7 @@ $("#formCode").on('submit', function(e){
 
 socket.on('join room', (roomId) => {
     player.roomId = roomId;
+    console.log(roomId)
     linkToShare.innerHTML = player.roomId;
     readyArea.classList.remove('d-none');
 });
@@ -131,10 +134,12 @@ socket.on('start game', (players) => {
 });
 
 socket.on('join player', (players) => {
+    myPlayers = players;
     tablePlayers(players);
 });
 
 socket.on('disconnect player', (players) => {
+    myPlayers = players;
     tablePlayers(players);
 });
 
@@ -155,11 +160,12 @@ function startGame(players){
     socket.on("time", (time) => {
         myTime = time;
         console.log(myTime)
-        $('#chrono').text(time);
         var audio = new Audio('../sound/tic.mp3');
-        audio.play();
+        setTimeout(audio.play(), 9000)
+        $('#chrono').text(time)
+        $('#chrono').show();
     })
-    
+
     socket.on("get kanji", (kanji) => {
         response.classList.remove("d-none");
         gameCard.classList.remove("d-none");
@@ -175,20 +181,33 @@ function startGame(players){
     socket.on("manche fini", (kanji) => {
         $("#imgKanji").attr("src",kanji.visuel);
         $("#reponse").text("La réponse était "+kanji.traduction);
-        $('#chrono').text("10");
+        $('#chrono').hide();
+        $('#chrono').text("");
         response.classList.add("d-none");
         myTime = 10;
-        console.log(kanji)
-        printScore(kanji.players);
+        myPlayers = kanji.players
+        printScore(myPlayers);
     })
     $("#formKanji").on("submit", function(e){
         e.preventDefault();
         let response = $("#responseInput").val().trim()
         socket.emit("get response kanji", ({response , player, time:myTime}));
     })
-    
-    socket.on("get score", (players) => {
-        printScore(players);
+
+    socket.on("get score", (setPlayer) => {
+        setScore(setPlayer);
+    })
+
+    socket.on("winner", (winner) => {
+        $("#winner").text(winner.username);
+        imgKanji.classList.add("d-none");
+        crown.classList.remove("d-none")
+        $("#reponse").text("");
+        if(winner.socketId === player.socketId){
+          $("#resultat").html("Bravo !!!</br>Continue comme ça !");
+        }else{
+          $("#resultat").html("Dommage...</br>Tu feras mieux la prochaine fois !");
+        }
     })
 
 }
@@ -219,9 +238,9 @@ function tablePlayers(players){
     let html = "<h3 class='mb-2'>Players</h3>";
     players.forEach(player => {
         if(player.ready === false){
-            html += "<div class='col-12 text-center'>"+player.username+" Pas prêt</div>"
+            html += "<div class='col-12 text-center p-1'>"+player.username+" Pas prêt</div>"
         }else{
-            html += "<div class='col-12 text-center'>"+player.username+" Prêt</div>"
+            html += "<div class='col-12 text-center p-1'>"+player.username+" Prêt</div>"
         }
     })
     tablePlayer.innerHTML = "";
@@ -238,30 +257,47 @@ function printScore(players){
     players.forEach(p => {
             if(p.socketId === player.socketId){
                 if(p.win){
-                    var audio = new Audio('../sound/succes.mp3');
-                    audio.play();
-                    playerScore = p.score;
                     response.classList.add("d-none");
-                    $("#resultat").text("Bien joué !");
-                    html += "<div class='col-12 text-center bg-white'><b>"+p.username+" : "+p.score+" pt </b></div>"
+                    html += "<div class='col-12 text-center bg-white p-1'><b>"+p.username+" : "+p.score+" pt </b></div>"
                 }else{
-                    console.log(myTime)
-                    if(myTime < 10){
-                        $("#resultat").text("Mauvaise réponse !");
-                    }
-                        html += "<div class='col-12 text-center'><b>"+p.username+" : "+p.score+" pt </b></div>"
+                    html += "<div class='col-12 text-center p-1'><b>"+p.username+" : "+p.score+" pt </b></div>"
                 }
             }else{
                 if(p.win === false){
-                    html += "<div class='col-12 text-center'>"+p.username+" : "+p.score+" pt </div>"
+                    html += "<div class='col-12 text-center p-1'>"+p.username+" : "+p.score+" pt </div>"
                 }else{
-                    var audio = new Audio('../sound/point.mp3');
-                    audio.play();
-                    html += "<div class='col-12 text-center bg-white'>"+p.username+" : "+p.score+" pt</div>"
+                    html += "<div class='col-12 text-center bg-white p-1'>"+p.username+" : "+p.score+" pt</div>"
                 }
             }
     })
     tablePlayer.innerHTML = "";
     tablePlayer.innerHTML = html;
     tablePlayer.classList.remove('d-none');
+}
+
+function setScore(setPlayer){
+     myPlayer = myPlayers.find(element => element.socketId === setPlayer.socketId);
+       if(myPlayer.socketId === player.socketId){
+         if(setPlayer.win){
+             var audio = new Audio('../sound/succes.mp3');
+             myPlayer.win = true;
+             myPlayer.score = setPlayer.score;
+             response.classList.add("d-none");
+             $("#resultat").text("Bien joué !");
+             playerScore = myPlayer.score;
+             audio.play();
+         }else{
+             if(myTime < 10){
+                 $("#resultat").text("Mauvaise réponse !");
+             }
+         }
+       }else{
+           if(setPlayer.win){
+               myPlayer.win = true;
+               myPlayer.score = setPlayer.score;
+               var audio = new Audio('../sound/point.mp3');
+               audio.play();
+           }
+       }
+       printScore(myPlayers);
 }

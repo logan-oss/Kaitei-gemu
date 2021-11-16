@@ -31,7 +31,7 @@ http.listen(port, () => {
 let rooms = [];
 let roomGame = [];
 let kanji = [{ id: 1, kanji: "月", kana: "つき", traduction: "lune", difficulte: 1, img_kanji: "https://ae01.alicdn.com/kf/HTB1Qg8Ua5jrK1RjSsplq6xHmVXae.jpg?width=800&height=800&hash=1600", visuel: "https://static.actu.fr/uploads/2021/08/adobestock-297400017.jpeg", description: "" },
-{ id: 2, kanji: "水", kana: "みず", traduction: "eau", difficulte: 1, img_kanji: "https://lh3.googleusercontent.com/proxy/yyrUAPyRKBTNqT9SupGNO4Sa5-vztT7hPk7BWB-hAd3YdwkafEHoO2ANQ7dWoYUJui6Ijb8pE00g8i0Kz9SNU0pJ4EZre_iKe61H44YdpGIaRYlDVPmbNCuazu5PeRb4GY4DMVzGReCYChrbKKjv-o_6_e2VD9Azlq8", visuel: "https://www.weka.fr/actualite/wp-content/uploads/2021/04/eau-et-assainissement-la-gestion-publique-des-services-un-atout-pour-les-collectivites-1280x720.jpg", description: "" },
+{ id: 2, kanji: "水", kana: "みず", traduction: "eau", difficulte: 1, img_kanji: "https://publicdomainvectors.org/photos/1326635076.png", visuel: "https://www.weka.fr/actualite/wp-content/uploads/2021/04/eau-et-assainissement-la-gestion-publique-des-services-un-atout-pour-les-collectivites-1280x720.jpg", description: "" },
 { id: 3, kanji: "風", kana: "かぜ", traduction: "vent", difficulte: 1, img_kanji: "https://i.skyrock.net/4857/51654857/pics/2142078567_1.gif", visuel: "https://cdn.radiofrance.fr/s3/cruiser-production/2021/06/26f3627c-db89-46b8-adce-f4af974d7f61/1136_tempete.jpg", description: "" },
 ]
 
@@ -42,8 +42,7 @@ io.on('connection', (socket) => {
     socket.on('playerData', (player) => {
         console.log(`[playerData] ${player.username}`);
         let room = null;
-
-        // si le joueur n'appartient pas à une room, on lui en créé une. 
+        // si le joueur n'appartient pas à une room, on lui en créé une.
         if(!player.roomId){
             room = createRoom(player);
             console.log(`[create room ] - ${room.id} - ${player.username}`);
@@ -106,13 +105,13 @@ io.on('connection', (socket) => {
                 if(word === monKanji.traduction){
                     player.score += 10 - res.time;
                     player.win = true;
-                    if(player.score >= 50){
+                    if(player.score >= 10){
                         if(!myRoomGame.winner){
                             myRoomGame.winner = player;
                         }
                     }
-                    io.to(room.id).emit('get score', room.players);
                 }
+                io.to(room.id).emit('get score', player);
             })
     });
 
@@ -131,32 +130,35 @@ io.on('connection', (socket) => {
 
         rooms.forEach(r => {
             r.players.forEach(p => {
-                if(p.socketId === socket.id && p.host){
-                    room = r;
-                    rooms = rooms.filter(r => r !== room);
-                }
 
                 if(p.socketId === socket.id){
                     console.log(p.username);
                     player = p
                     r.players = r.players.filter(p => p !== player);
-                    console.log(r.players)
-                    io.to(p.roomId).emit('disconnect player', r.players);
+                    if(r.players.length === 0){
+                      if(!roomGame.find(element => element.roomId === r.id)){
+                              roomGame = roomGame.filter(r => r.roomId !== r.id);
+                            }
+                      rooms = rooms.filter(room => room !== r);
+                    }else{
+                      console.log(r.players)
+                      io.to(p.roomId).emit('disconnect player', r.players);
+                    }
                 }
             })
         })
     })
 
     function KanjiStart(room){
-            this.manche = function(){
-                KanjiGame();
-            }
             KanjiGame();
-            setInterval(this.manche.bind(this), 23000);
 
 
             function KanjiGame(){
-                thisRoom = rooms.find(element => element.id === room.id);
+                if(thisRoom = rooms.find(element => element.id === room.id)){
+
+                }else{
+                  return;
+                }
                 players = thisRoom.players;
                 let monKanji;
                 if(myRoom = roomGame.find(element => element.roomId === thisRoom.id)){
@@ -176,6 +178,8 @@ io.on('connection', (socket) => {
                 }
                 io.to(room.id).emit('get kanji', {kanji:monKanji.kanji, img:monKanji.img_kanji});
                 let time = 0;
+                let res = 0;
+                let resTime;
                 this.run = function() {
                     timer();
                 }
@@ -183,20 +187,46 @@ io.on('connection', (socket) => {
                 let Timer = setInterval(this.run.bind(this), 1500);
 
                 function timer(){
+                    if(rooms.find(element => element.id === thisRoom.id)){
+                      players = rooms.find(element => element.id === thisRoom.id).players;
+                    }else{
+                      clearInterval(Timer);
+                      return;
+                    }
                     if(time === 10){
-                        players = rooms.find(element => element.id === thisRoom.id).players;
                         players.forEach(p => {
                             p.win = false;
                         })
-                        time = 0;
                         io.to(room.id).emit('manche fini', {traduction:monKanji.traduction, visuel:monKanji.visuel, players});
+                        resTimer();
+                        let resTime = setInterval(resTimer, 1500);
                         clearInterval(Timer);
-                    }else{
+                    }else if(time < 10){
+                        if(players.find(element => element.win === false)){
                         io.to(room.id).emit('time', time);
-                        time += 1;
+                      }else{
+                        players.forEach(p => {
+                            p.win = false;
+                        })
+                        io.to(room.id).emit('manche fini', {traduction:monKanji.traduction, visuel:monKanji.visuel, players});
+                        resTimer();
+                        let resTime = setInterval(resTimer, 1500);
+                        clearInterval(Timer);
+                        return;
+                      }
+                    }
+                    console.log("2")
+                    time += 1;
+
+                    function resTimer(){
+                      if(res === 3){
+                        clearInterval(resTime);
+                        KanjiGame();
+                      }
+                      res += 1
                     }
                 }
-            }
+              }
         }
 });
 
@@ -221,4 +251,3 @@ function createRoom(player) {
         return code;
     }
 }
-
