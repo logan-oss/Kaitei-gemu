@@ -52,12 +52,16 @@ io.on('connection', (socket) => {
             if(room === undefined){
                 return;
             }
-
+            if(room.inGame === true){
+                player.ready = true;
+            }
             room.players.push(player);
         }
 
         socket.join(room.id);
-        io.to(socket.id).emit('join room', room.id); // on envoi au joueur l'id de la room
+
+        io.to(socket.id).emit('join room', {roomId:room.id, inGame: room.inGame}); // on envoi au joueur l'id de la room
+    
         io.to(room.id).emit('join player', room.players); // on envoi aux joueurs de la room les joueurs
     });
 
@@ -89,6 +93,7 @@ io.on('connection', (socket) => {
                 io.to(room.id).emit("ready", players);
             }else{
                 io.to(roomId).emit("start game", players);
+                room.inGame = true;
                 KanjiStart(room)
             }
     })
@@ -215,7 +220,6 @@ io.on('connection', (socket) => {
                         return;
                       }
                     }
-                    console.log("2")
                     time += 1;
 
                     function resTimer(){
@@ -232,7 +236,7 @@ io.on('connection', (socket) => {
 
 function createRoom(player) {
     console.log(roomId())
-    const room = { id: roomId(), players: [], private: false, game: "" };
+    const room = { id: roomId(), players: [], private: false, game: "", inGame: false };
 
     player.roomId = room.id;
 

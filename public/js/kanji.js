@@ -14,6 +14,7 @@ const socket = io();
 
 let playerScore = player.score;
 let myPlayers = [];
+let myTime;
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const roomId = urlParams.get('room');
@@ -30,6 +31,7 @@ const gameCard = document.getElementById("cardGame");
 const restartArea = document.getElementById("restart-area");
 const readyArea = document.getElementById("ready-area");
 const waitingArea = document.getElementById("waiting-area");
+const waitGame = document.getElementById("wait-game");
 
 const roomsCard = document.getElementById("rooms-card");
 const roomsList = document.getElementById("rooms-list");
@@ -63,10 +65,17 @@ socket.on('list rooms', (rooms) => {
         rooms.forEach(room => {
           console.log(room)
             if(room.players.length !== 7 && room.private === false){
-                html += `<li class="list-group-item d-flex justify-content-between">
+                if(room.inGame){
+                    html += `<li class="list-group-item d-flex justify-content-between">
+                <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} - ${room.id} - Partie en cours...</p>
+                <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
+            </li>`;
+                }else{
+                    html += `<li class="list-group-item d-flex justify-content-between">
                 <p class="p-0 m-0 flex-grow-1 fw-bold">Salon de ${room.players[0].username} - ${room.id}</p>
                 <button class="btn btn-sm btn-success join-room" data-room="${room.id}">Rejoindre</button>
             </li>`;
+                }
             }
         });
     }
@@ -119,11 +128,18 @@ $("#formCode").on('submit', function(e){
     })
 })
 
-socket.on('join room', (roomId) => {
-    player.roomId = roomId;
-    console.log(roomId)
+socket.on('join room', (room) => {
+    player.roomId = room.roomId;
     linkToShare.innerHTML = player.roomId;
     readyArea.classList.remove('d-none');
+    if(room.inGame){
+        //$("#wait-game").classList.remove("d-none");
+        readyArea.classList.add('d-none');
+        waitingArea.classList.add("d-none");
+        waitGame.classList.remove("d-none");
+        gameCard.classList.remove("d-none");
+        $("#kanji").hide();
+    }
 });
 
 socket.on('start game', (players) => {
@@ -131,6 +147,8 @@ socket.on('start game', (players) => {
     startGame(players);
     waitingArea.classList.add("d-none");
     readyBtn.classList.add("d-none");
+    crown.classList.add("d-none");
+    imgKanji.classList.remove("d-none");
 });
 
 socket.on('join player', (players) => {
@@ -153,64 +171,72 @@ socket.on('play', (ennemyPlayer) => {
     }
 })
 
-let myTime;
 function startGame(players){
+
     printScore(players);
     restartArea.classList.add('d-none');
-    socket.on("time", (time) => {
-        myTime = time;
-        console.log(myTime)
-        var audio = new Audio('../sound/tic.mp3');
-        setTimeout(audio.play(), 9000)
-        $('#chrono').text(time)
-        $('#chrono').show();
-    })
-
-    socket.on("get kanji", (kanji) => {
-        response.classList.remove("d-none");
-        gameCard.classList.remove("d-none");
-        $("#reponse").text("");
-        $("#resultat").text("");
-        $("#imgKanji").attr("src",kanji.img);
-        $("#imgKanji").attr("alt",kanji.kanji);
-        $("#responseInput").val("");
-        $("#responseInput").focus();
-        console.log(kanji);
-    })
-
-    socket.on("manche fini", (kanji) => {
-        $("#imgKanji").attr("src",kanji.visuel);
-        $("#reponse").text("La réponse était "+kanji.traduction);
-        $('#chrono').hide();
-        $('#chrono').text("");
-        response.classList.add("d-none");
-        myTime = 10;
-        myPlayers = kanji.players
-        printScore(myPlayers);
-    })
-    $("#formKanji").on("submit", function(e){
-        e.preventDefault();
-        let response = $("#responseInput").val().trim()
-        socket.emit("get response kanji", ({response , player, time:myTime}));
-    })
-
-    socket.on("get score", (setPlayer) => {
-        setScore(setPlayer);
-    })
-
-    socket.on("winner", (winner) => {
-        $("#winner").text(winner.username);
-        imgKanji.classList.add("d-none");
-        crown.classList.remove("d-none")
-        $("#reponse").text("");
-        if(winner.socketId === player.socketId){
-          $("#resultat").html("Bravo !!!</br>Continue comme ça !");
-        }else{
-          $("#resultat").html("Dommage...</br>Tu feras mieux la prochaine fois !");
-        }
-    })
 
 }
+
+socket.on("time", (time) => {
+    myTime = time;
+    var audio = new Audio('../sound/tic.mp3');
+    audio.play();
+    $('#chrono').text(10 - myTime)
+    $('#chrono').show();
+})
+
+socket.on("get kanji", (kanji) => {
+    $("#wait-game").hide();
+    $("#kanji").show();
+    response.classList.remove("d-none");
+    gameCard.classList.remove("d-none");
+    $("#reponse").text("");
+    $("#resultat").text("");
+    $("#imgKanji").attr("src",kanji.img);
+    $("#imgKanji").attr("alt",kanji.kanji);
+    $("#responseInput").val("");
+    $("#responseInput").focus();
+    console.log(kanji);
+})
+
+socket.on("manche fini", (kanji) => {
+    $("#imgKanji").attr("src",kanji.visuel);
+    $("#reponse").text("La réponse était "+kanji.traduction);
+    $('#chrono').text("");
+    response.classList.add("d-none");
+    myTime = 10;
+    myPlayers = kanji.players
+    printScore(myPlayers);
+})
+$("#formKanji").on("submit", function(e){
+    e.preventDefault();
+    let response = $("#responseInput").val().trim()
+    socket.emit("get response kanji", ({response , player, time:myTime}));
+})
+
+socket.on("get score", (setPlayer) => {
+    setScore(setPlayer);
+})
+
+socket.on("winner", (winner) => {
+    $("#winner").text(winner.username);
+    imgKanji.classList.add("d-none");
+    crown.classList.remove("d-none")
+    $("#reponse").text("");
+    if(winner.socketId === player.socketId){
+        var audio = new Audio('../sound/win.mp3');
+        audio.play();
+      $("#resultat").html("Bravo !!!</br>Continue comme ça !");
+    }else{
+        var audio = new Audio('../sound/lose.mp3');
+        audio.play();
+      $("#resultat").html("Dommage...</br>Tu feras mieux la prochaine fois !");
+    }
+    readyArea.classList.remove('d-none');
+    readyBtn.classList.remove("d-none");
+    tablePlayers(myPlayers)
+})
 
 const joinRoom = function(){
     if(usernameInput.value !== ""){
@@ -289,6 +315,12 @@ function setScore(setPlayer){
          }else{
              if(myTime < 10){
                  $("#resultat").text("Mauvaise réponse !");
+                 let inputField = document.getElementById("responseInput");
+                 inputField.classList.add("bounce");
+                setTimeout(function() {
+                //remove the class so animation can occur as many times as user triggers event, delay must be longer than the animation duration and any delay.
+                inputField.classList.remove("bounce");
+                }, 1000); 
              }
          }
        }else{
